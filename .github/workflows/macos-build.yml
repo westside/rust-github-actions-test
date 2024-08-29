@@ -1,0 +1,62 @@
+name: Rust macOS Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        profile: minimal
+        override: true
+    
+    - name: Build
+      run: |
+        cd rust-sdk
+        cargo build --release --verbose
+    
+    - name: Run tests
+      run: |
+        cd rust-sdk
+        cargo test --verbose
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: rust-sdk-macos
+        path: rust-sdk/target/release/*
+
+    - name: Get the version
+      id: get_version
+      run: echo ::set-output name=VERSION::$(grep version rust-sdk/Cargo.toml | head -n 1 | awk '{print $3}' | sed 's/"//g')
+      
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ steps.get_version.outputs.VERSION }}
+        release_name: Release ${{ steps.get_version.outputs.VERSION }}
+        draft: false
+        prerelease: false
+      
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./rust-sdk/target/release/rust-test
+        asset_name: rust-test-macos
+        asset_content_type: application/octet-stream
