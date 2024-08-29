@@ -3,6 +3,8 @@ name: Rust macOS Build
 on:
   push:
     branches: [ main ]
+    tags:
+      - 'v*'  # This will trigger the workflow on tag pushes starting with 'v'
   pull_request:
     branches: [ main ]
 
@@ -40,16 +42,26 @@ jobs:
           name: rust-sdk-macos
           path: rust-sdk/target/release/*
 
+
       - name: Get the version
         id: get_version
         run: echo "VERSION=$(grep version rust-sdk/Cargo.toml | head -n 1 | awk '{print $3}' | sed 's/"//g')" >> $GITHUB_OUTPUT
+
+      - name: Create archive
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          cd rust-sdk/target/release
+          zip -r rust-sdk-macos.zip *
 
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: ./rust-sdk/target/release/rust-test
-          name: Release ${{ steps.get_version.outputs.VERSION }}
+          files: |
+            ./rust-sdk/target/release/rust-test
+            ./rust-sdk/target/release/rust-sdk-macos.zip
+          name: Release ${{ github.ref_name }}
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
