@@ -59,7 +59,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            ./rust-sdk/target/release/rust-test
+            ./rust-sdk/target/release/rust-sample
             ./rust-sdk/target/release/rust-sdk-macos.zip
           name: Release ${{ github.ref_name }}
           generate_release_notes: true
