@@ -6,9 +6,16 @@ version = 3
 name = "rust-sample"
 version = "0.1.0"
 dependencies = [
- "test-sdk",
+ "test-rust-sdk",
 ]
+
+[[package]]
+name = "test-rust-sdk"
+version = "0.1.0"
 
 [[package]]
 name = "test-sdk"
 version = "0.1.0"
+dependencies = [
+ "test-rust-sdk",
+]

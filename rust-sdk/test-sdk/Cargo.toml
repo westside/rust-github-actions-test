@@ -7,3 +7,4 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
+test-rust-sdk = { path="../test-rust-sdk"}
