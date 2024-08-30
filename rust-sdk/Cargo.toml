@@ -1,6 +1,5 @@
-[package]
-name = "rust-test"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
+[workspace]
+members = [
+    "bhaptics-sdk",
+    "rust-sample"
+]
