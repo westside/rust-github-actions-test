@@ -3,3 +3,5 @@ members = [
     "test-sdk",
     "rust-sample"
 ]
+
+resolver = "2"
